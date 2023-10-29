@@ -1,0 +1,74 @@
+<div class="card mt-4">
+  <div class="card-header">
+    <h5>Products list</h5>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+  <div class="d-flex m-2">
+    <a routerLink="/admin/add-product"  class="btn btn-primary btn-sm">Add product</a>
+  </div>
+  <div class="card-body" *ngIf="products">
+    <form [formGroup]="formGroup" (submit)="handleSearch()">
+      <div class="d-flex col-12">
+        <div class="col-8 me-1">
+          <div class="input-group input-group-sm mb-3">
+            <span class="input-group-text">Name</span>
+            <input type="text" formControlName="searchKeyword" class="form-control" aria-label="Sizing example input"
+              aria-describedby="inputGroup-sizing-sm" />
+          </div>
+        </div>
+        <div class="col-3">
+          <button type="submit" class="btn btn-primary btn-sm">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Name</th>
+          <th scope="col">Price</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>{{ product.id }}</td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.price }}</td>
+          <td><i *ngIf="product.promotion" class="bi bi-check-circle"></i></td>
+          <td>
+            <!-- <button *ngIf="!product.promotion" class="btn btn-success btn-sm">Promo on</button>
+            <button *ngIf="product.promotion" class="btn btn-danger btn-sm">Promo off</button> -->
+            <button *ngIf="authenticationService.hasRole('ADMIN')" (click)="handleChangePromo(product)" [ngClass]="
+                product.promotion
+                  ? 'btn btn-danger btn-sm'
+                  : 'btn btn-success btn-sm'
+              ">
+              <span *ngIf="product.promotion">Promo off</span>
+              <span *ngIf="!product.promotion">Promo on</span>
+            </button>
+          </td>
+          <td>
+            <div class="d-flex">
+              <button *ngIf="authenticationService.hasRole('ADMIN')" (click)="handleDeleteProduct(product)" class="btn btn-danger btn-sm me-1">
+                <i class="bi bi-trash"></i>
+              </button>
+              <a *ngIf="authenticationService.hasRole('ADMIN')" (click)="handleEditProduct(product)" class="btn btn-success btn-sm">
+                <i class="bi bi-pencil-fill"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <nav aria-label="...">
+      <ul class="pagination">
+        <li *ngFor="let item of [].constructor(totalPages), let i = index" [ngClass]="i == page ? 'page-item active' : 'page-item'"><a class="page-link" (click)="handleChangePage(i, size)">{{i}}</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
